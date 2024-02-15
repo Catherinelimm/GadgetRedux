@@ -9,6 +9,10 @@ import {
   ProductsPage,
   BestSellingPage,
   FAQPage,
+  CheckoutPage,
+  PaymentPage,
+  OrderSuccessPage,
+  OrderDetailsPage,
   About,
 } from "./routes/Routes.js";
 

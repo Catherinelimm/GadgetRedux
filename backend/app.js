@@ -27,6 +27,8 @@ if (process.env.NODE_ENV !== "PRODUCTION") {
 
 // import routes
 const user = require("./controller/user");
+const payment = require("./controller/payment");
+const order = require("./controller/order");
 
 app.use("/api/v2/user", user);
 app.use("/api/v2/conversation", conversation);
