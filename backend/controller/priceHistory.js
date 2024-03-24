@@ -68,7 +68,7 @@ async function saveToDatabase(products, country, source) {
       case "Amazon":
         return {
           ...saveDbObj,
-          price: e?.product_price?.replace(/[\$,]/g, ""),
+          price: e?.product_price?.replace(/[£\$,]/g, ""),
           product_name: e?.product_title,
         };
         break;
