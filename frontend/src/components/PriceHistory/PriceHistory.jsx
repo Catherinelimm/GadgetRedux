@@ -21,11 +21,17 @@ const PriceHistory = () => {
 
   const handleSearch = async () => {
     try {
-      const response = await axios.post(`${server}/price/price-history`, {
-        itemName,
-        country,
-        source,
-      });
+      const response = await axios.post(
+        `${server}/price/price-history`,
+        {
+          itemName,
+          country,
+          source,
+        },
+        {
+          timeout: 15000, // Timeout in milliseconds (15 seconds)
+        }
+      );
       setPriceHistory(response.data.data);
       console.log(response.data.data, "Response DATA");
     } catch (error) {
@@ -41,7 +47,9 @@ const PriceHistory = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl  text-[#053B50] font-bold mb-4">Item Price History</h1>
+      <h1 className="text-3xl  text-[#053B50] font-bold mb-4">
+        Item Price History
+      </h1>
       <div className="flex space-x-2 mb-4">
         <input
           type="text"
@@ -109,6 +117,6 @@ const PriceHistory = () => {
       )}
     </div>
   );
-}
+};
 
 export default PriceHistory;
