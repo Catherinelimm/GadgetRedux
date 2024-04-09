@@ -15,28 +15,39 @@ router.post("/create-user", async (req, res, next) => {
     const { name, email, password, avatar } = req.body;
     const userEmail = await User.findOne({ email });
 
+    const defaultavatar = {
+      public_id: "avatars/defaultavatar",
+      url: "https://res.cloudinary.com/dzr4sqtwh/image/upload/v1712671745/avatars/defaultavatar.png",
+    };
+
     if (userEmail) {
       return next(new ErrorHandler("User already exists", 400));
     }
 
-    const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-      folder: "avatars",
-    });
-
-    const user = {
+    let user = {
       name: name,
       email: email,
       password: password,
-      avatar: {
+      avatar: defaultavatar,
+    };
+
+    // If avatar is provided, upload it to Cloudinary
+    if (avatar) {
+      const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+        folder: "avatars",
+      });
+
+      user.avatar = {
         public_id: myCloud.public_id,
         url: myCloud.secure_url,
-      },
-    };
+      };
+    }
 
     const activationToken = createActivationToken(user);
 
-    console.log("Activation Token:" +activationToken);
-    const activationUrl = `http://localhost:3000/activation/${activationToken}`;
+    // console.log("Activation Token:" + activationToken);
+
+    const activationUrl = `https://gadget-redux.vercel.app/activation/${activationToken}`;
 
     try {
       await sendMail({
@@ -46,10 +57,9 @@ router.post("/create-user", async (req, res, next) => {
       });
       res.status(201).json({
         success: true,
-        message: `please check your email:- ${user.email} to activate your account!`,
+        message: `Please check your email:- ${user.email} to activate your account!`,
       });
     } catch (error) {
-      console.log("Error sini");
       return next(new ErrorHandler(error.message, 500));
     }
   } catch (error) {
@@ -60,7 +70,7 @@ router.post("/create-user", async (req, res, next) => {
 // create activation token
 const createActivationToken = (user) => {
   return jwt.sign(user, process.env.ACTIVATION_SECRET, {
-    expiresIn: "5m",
+    expiresIn: "30m",
   });
 };
 
@@ -364,7 +374,6 @@ router.get(
     }
   })
 );
-
 
 // all users --- for admin
 router.get(
