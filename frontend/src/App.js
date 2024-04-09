@@ -35,11 +35,20 @@ import {
   ShopWithDrawMoneyPage,
   ShopInboxPage,
 } from "./routes/ShopRoutes";
+import {
+  AdminDashboardPage,
+  AdminDashboardUsers,
+  AdminDashboardSellers,
+  AdminDashboardOrders,
+  AdminDashboardProducts,
+  AdminDashboardWithdraw,
+} from "./routes/AdminRoutes";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Store from "./redux/store";
 import { loadSeller, loadUser } from "./redux/actions/user";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import ProtectedAdminRoute from "./routes/ProtectedAdminRoute";
 import { ShopHomePage } from "./ShopRoutes.js";
 import SellerProtectedRoute from "./routes/SellerProtectedRoute";
 import { getAllProducts } from "./redux/actions/product";
@@ -222,7 +231,55 @@ const App = () => {
             </SellerProtectedRoute>
           }
         />
-        
+        {/* Admin Routes */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedAdminRoute>
+              <AdminDashboardPage />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route
+          path="/admin-users"
+          element={
+            <ProtectedAdminRoute>
+              <AdminDashboardUsers />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route
+          path="/admin-sellers"
+          element={
+            <ProtectedAdminRoute>
+              <AdminDashboardSellers />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route
+          path="/admin-orders"
+          element={
+            <ProtectedAdminRoute>
+              <AdminDashboardOrders />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route
+          path="/admin-products"
+          element={
+            <ProtectedAdminRoute>
+              <AdminDashboardProducts />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route
+          path="/admin-withdraw-request"
+          element={
+            <ProtectedAdminRoute>
+              <AdminDashboardWithdraw />
+            </ProtectedAdminRoute>
+          }
+        />
       </Routes>
       <ToastContainer
         position="bottom-center"
