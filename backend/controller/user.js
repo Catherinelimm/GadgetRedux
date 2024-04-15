@@ -45,8 +45,6 @@ router.post("/create-user", async (req, res, next) => {
 
     const activationToken = createActivationToken(user);
 
-    // console.log("Activation Token:" + activationToken);
-
     const activationUrl = `https://gadget-redux.vercel.app/activation/${activationToken}`;
 
     try {
