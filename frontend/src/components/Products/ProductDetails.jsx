@@ -86,10 +86,9 @@ const ProductDetails = ({ data }) => {
       0
     );
 
-  const avg =  totalRatings / totalReviewsLength || 0;
+  const avg = totalRatings / totalReviewsLength || 0;
 
   const averageRating = avg.toFixed(2);
-
 
   const handleMessageSubmit = async () => {
     if (isAuthenticated) {
@@ -150,6 +149,17 @@ const ProductDetails = ({ data }) => {
               </div>
               <div className="w-full 800px:w-[50%] pt-5">
                 <h1 className={`${styles.productTitle}`}>{data.name}</h1>
+                <span
+                  className={`font-[400] text-[17px] rounded-full px-2 py-0.25 ${
+                    data.condition === "New"
+                      ? "text-green-600 bg-green-100 border border-green-300"
+                      : data.condition === "Used"
+                      ? "text-amber-600 bg-yellow-100 border border-orange-200"
+                      : ""
+                  }`}
+                >
+                  {data?.condition + " Condition"}
+                </span>
                 <p>{data.description}</p>
                 <div className="flex pt-3">
                   <h4 className={`${styles.productDiscountPrice}`}>

@@ -6,7 +6,7 @@ import {
   AiOutlineShoppingCart,
 } from "react-icons/ai";
 import { RxCross1 } from "react-icons/rx";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "../../../styles/styles";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -15,16 +15,44 @@ import {
   addToWishlist,
   removeFromWishlist,
 } from "../../../redux/actions/wishlist";
+import axios from "axios";
+import { server } from "../../../server";
+import { getAllProductsShop } from "../../../redux/actions/product";
 
 const ProductDetailsCard = ({ setOpen, data }) => {
+  
   const { cart } = useSelector((state) => state.cart);
   const { wishlist } = useSelector((state) => state.wishlist);
   const dispatch = useDispatch();
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
+  const { user, isAuthenticated } = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  const { products } = useSelector((state) => state.products);
+
   //   const [select, setSelect] = useState(false);
 
-  const handleMessageSubmit = () => {};
+  const handleMessageSubmit = async () => {
+    if (isAuthenticated) {
+      const groupTitle = data._id + user._id;
+      const userId = user._id;
+      const sellerId = data.shop._id;
+      await axios
+        .post(`${server}/conversation/create-new-conversation`, {
+          groupTitle,
+          userId,
+          sellerId,
+        })
+        .then((res) => {
+          navigate(`/inbox?${res.data.conversation._id}`);
+        })
+        .catch((error) => {
+          toast.error(error.response.data.message);
+        });
+    } else {
+      toast.error("Please login to create a conversation");
+    }
+  };
 
   const decrementCount = () => {
     if (count > 1) {
@@ -52,12 +80,19 @@ const ProductDetailsCard = ({ setOpen, data }) => {
   };
 
   useEffect(() => {
-    if (wishlist && wishlist.find((i) => i._id === data._id)) {
-      setClick(true);
-    } else {
-      setClick(false);
+    // Fetch product details when the component mounts
+    // Ensure data exists before dispatching action
+    if (data) {
+      dispatch(getAllProductsShop(data.shop._id));
+
+      // Check if the product is in the wishlist
+      if (wishlist && wishlist.find((i) => i._id === data._id)) {
+        setClick(true);
+      } else {
+        setClick(false);
+      }
     }
-  }, [wishlist]);
+  }, [wishlist, data, dispatch]);
 
   const removeFromWishlistHandler = (data) => {
     setClick(!click);
@@ -68,6 +103,22 @@ const ProductDetailsCard = ({ setOpen, data }) => {
     setClick(!click);
     dispatch(addToWishlist(data));
   };
+
+  const totalReviewsLength =
+    products &&
+    products.reduce((acc, product) => acc + product.reviews.length, 0);
+
+  const totalRatings =
+    products &&
+    products.reduce(
+      (acc, product) =>
+        acc + product.reviews.reduce((sum, review) => sum + review.rating, 0),
+      0
+    );
+
+  const avg = totalRatings / totalReviewsLength || 0;
+
+  const averageRating = avg.toFixed(2);
 
   return (
     <div className="bg-[#fff]">
@@ -86,7 +137,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                 <div className="flex">
                   <Link to={`/shop/preview/${data.shop._id}`} className="flex">
                     <img
-                      src={`${data.images && data.images[0]?.url}`}
+                      src={`${data.shop.avatar && data.shop.avatar?.url}`}
                       alt=""
                       className="w-[50px] h-[50px] rounded-full mr-2"
                     />
@@ -94,7 +145,9 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                       <h3 className={`${styles.shop_name}`}>
                         {data.shop.name}
                       </h3>
-                      <h5 className="pb-3 text-[15px]">{data?.ratings} Ratings</h5>
+                      <h5 className="pb-3 text-[15px]">
+                        ({averageRating}/5) Ratings
+                      </h5>
                     </div>
                   </Link>
                 </div>
@@ -106,13 +159,26 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                     Send Message <AiOutlineMessage className="ml-1" />
                   </span>
                 </div>
-                <h5 className="text-[16px] text-[red] mt-5">(50) Sold out</h5>
+                <span className="font-[400] text-[17px] text-[#64CCC5]">
+                  {data?.sold_out} sold
+                </span>
               </div>
 
               <div className="w-full 800px:w-[50%] pt-5 pl-[5px] pr-[5px]">
                 <h1 className={`${styles.productTitle} text-[20px]`}>
                   {data.name}
                 </h1>
+                <span
+                  className={`font-[400] text-[17px] rounded-full px-2 py-0.25 ${
+                    data.condition === "New"
+                      ? "text-green-600 bg-green-100 border border-green-300"
+                      : data.condition === "Used"
+                      ? "text-amber-600 bg-yellow-100 border border-orange-200"
+                      : ""
+                  }`}
+                >
+                  {data?.condition}
+                </span>
                 <p>{data.description}</p>
 
                 <div className="flex pt-3">
