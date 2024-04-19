@@ -10,9 +10,11 @@ const DashboardHeader = () => {
        <header className="">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         <img src={hlogo} width={60} height={50} />
-        <p className="w-1/3 text-3xl font-bold text-[#EEEEEE] text-[25px] ">
+        <Link to="/">
+            <p className="w-1/3 text-3xl font-bold text-[#EEEEEE] text-[25px] ">
         GadgetRedux
         </p>
+            </Link>
       </div>
     </header>
       <div className="flex items-center">
