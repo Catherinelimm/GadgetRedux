@@ -32,9 +32,9 @@ const Payment = () => {
       .create({
         purchase_units: [
           {
-            description: "Sunflower",
+            description: "Laptop",
             amount: {
-              currency_code: "USD",
+              currency_code: "GDP",
               value: orderData?.totalPrice,
             },
           },
@@ -54,43 +54,6 @@ const Payment = () => {
     shippingAddress: orderData?.shippingAddress,
     user: user && user,
     totalPrice: orderData?.totalPrice,
-  };
-
-  const onApprove = async (data, actions) => {
-    return actions.order.capture().then(function (details) {
-      const { payer } = details;
-
-      let paymentInfo = payer;
-
-      if (paymentInfo !== undefined) {
-        paypalPaymentHandler(paymentInfo);
-      }
-    });
-  };
-
-  const paypalPaymentHandler = async (paymentInfo) => {
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-
-    order.paymentInfo = {
-      id: paymentInfo.payer_id,
-      status: "succeeded",
-      type: "Paypal",
-    };
-
-    await axios
-      .post(`${server}/order/create-order`, order, config)
-      .then((res) => {
-        setOpen(false);
-        navigate("/order/success");
-        toast.success("Order successful!");
-        localStorage.setItem("cartItems", JSON.stringify([]));
-        localStorage.setItem("latestOrder", JSON.stringify([]));
-        window.location.reload();
-      });
   };
 
   const paymentData = {
