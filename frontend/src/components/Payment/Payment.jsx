@@ -27,28 +27,6 @@ const Payment = () => {
     setOrderData(orderData);
   }, []);
 
-  const createOrder = (data, actions) => {
-    return actions.order
-      .create({
-        purchase_units: [
-          {
-            description: "Laptop",
-            amount: {
-              currency_code: "GDP",
-              value: orderData?.totalPrice,
-            },
-          },
-        ],
-        // not needed if a shipping address is actually needed
-        application_context: {
-          shipping_preference: "NO_SHIPPING",
-        },
-      })
-      .then((orderID) => {
-        return orderID;
-      });
-  };
-
   const order = {
     cart: orderData?.cart,
     shippingAddress: orderData?.shippingAddress,
